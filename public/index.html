@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星盘解读 - 探索你的宇宙密码</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.1.6/Lunar.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -30,7 +31,6 @@
             overflow-x: hidden;
         }
 
-        /* Stars background */
         .stars {
             position: fixed;
             top: 0;
@@ -53,7 +53,6 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Main container */
         .container {
             position: relative;
             z-index: 1;
@@ -62,7 +61,6 @@
             padding: 40px 20px;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 50px;
@@ -86,7 +84,6 @@
             font-weight: 300;
         }
 
-        /* Form card */
         .form-card {
             background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(192, 132, 252, 0.05));
             border: 1px solid rgba(139, 92, 246, 0.3);
@@ -122,7 +119,9 @@
             font-weight: 500;
         }
 
-        .form-group input,
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group input[type="text"],
         .form-group select {
             background: rgba(15, 10, 31, 0.8);
             border: 1px solid rgba(139, 92, 246, 0.4);
@@ -132,6 +131,7 @@
             font-size: 1em;
             font-family: inherit;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .form-group input:focus,
@@ -144,6 +144,48 @@
         .form-group input::placeholder {
             color: var(--text-muted);
             opacity: 0.6;
+        }
+
+        /* Custom checkbox for lunar */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: rgba(15, 10, 31, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-group:hover {
+            border-color: var(--primary);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group span {
+            color: var(--text-light);
+            font-size: 1em;
+        }
+
+        .lunar-info {
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: var(--accent);
+            display: none;
+        }
+
+        .lunar-info.show {
+            display: block;
         }
 
         .btn-calculate {
@@ -175,7 +217,6 @@
             transform: none;
         }
 
-        /* Result card */
         .result-card {
             display: none;
             background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(192, 132, 252, 0.05));
@@ -207,7 +248,6 @@
             margin-bottom: 10px;
         }
 
-        /* Chart display */
         .chart-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -242,7 +282,6 @@
             font-weight: 600;
         }
 
-        /* Interpretation */
         .interpretation {
             background: rgba(15, 10, 31, 0.6);
             border-radius: 20px;
@@ -261,9 +300,9 @@
             line-height: 2;
             color: var(--text-light);
             font-size: 1.05em;
+            white-space: pre-wrap;
         }
 
-        /* Loading */
         .loading {
             display: none;
             text-align: center;
@@ -293,7 +332,6 @@
             color: var(--text-muted);
         }
 
-        /* Planets section */
         .planets-section {
             margin-top: 30px;
         }
@@ -329,7 +367,6 @@
             font-weight: 500;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             margin-top: 50px;
@@ -338,7 +375,6 @@
             font-size: 0.85em;
         }
 
-        /* Mobile */
         @media (max-width: 600px) {
             .header h1 {
                 font-size: 2.2em;
@@ -353,17 +389,14 @@
     </style>
 </head>
 <body>
-    <!-- Stars background -->
     <div class="stars" id="stars"></div>
 
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <h1>✨ 星盘解读</h1>
             <p>探索你的宇宙密码，发现独特的生命旅程</p>
         </div>
 
-        <!-- Form -->
         <div class="form-card">
             <h2 class="form-title">🌙 告诉我关于你</h2>
             <form id="chartForm">
@@ -389,18 +422,23 @@
                             <option value="Asia/Singapore">新加坡</option>
                         </select>
                     </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="isLunar">
+                            <span>☯️ 我的生日是农历</span>
+                        </label>
+                        <div class="lunar-info" id="lunarInfo"></div>
+                    </div>
                 </div>
                 <button type="submit" class="btn-calculate" id="submitBtn">🔮 开始解读</button>
             </form>
         </div>
 
-        <!-- Loading -->
         <div class="loading" id="loading">
             <div class="loading-ring"></div>
             <p>星星正在解读你的星盘...</p>
         </div>
 
-        <!-- Result -->
         <div class="result-card" id="result">
             <div class="result-header">
                 <h2>🌟 你的星盘</h2>
@@ -437,7 +475,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="footer">
             <p>Made with 🌌 · 仅供娱乐参考 · 星盘不是宿命论</p>
         </div>
@@ -457,6 +494,47 @@
             starsContainer.appendChild(star);
         }
 
+        // Lunar calendar handling
+        const isLunarCheckbox = document.getElementById('isLunar');
+        const lunarInfo = document.getElementById('lunarInfo');
+        const birthDateInput = document.getElementById('birthDate');
+
+        isLunarCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                lunarInfo.classList.add('show');
+                updateLunarInfo();
+            } else {
+                lunarInfo.classList.remove('show');
+            }
+        });
+
+        birthDateInput.addEventListener('change', function() {
+            if (isLunarCheckbox.checked) {
+                updateLunarInfo();
+            }
+        });
+
+        function updateLunarInfo() {
+            const dateStr = document.getElementById('birthDate').value;
+            if (!dateStr) return;
+            
+            try {
+                const lunar = Lunar.fromDate(new Date(dateStr));
+                const lunarStr = lunar.format('yyyy年MM月dd日');
+                const solarTerm = lunar.getJieQi();
+                lunarInfo.textContent = `农历: ${lunarStr}${solarTerm ? ' (' + solarTerm + ')' : ''}`;
+            } catch (e) {
+                lunarInfo.textContent = '无法转换农历';
+            }
+        }
+
+        // Planet names mapping
+        const planetNames = {
+            'sun': '太阳', 'moon': '月亮', 'mercury': '水星',
+            'venus': '金星', 'mars': '火星', 'jupiter': '木星',
+            'saturn': '土星', 'uranus': '天王星', 'neptune': '海王星', 'pluto': '冥王星'
+        };
+
         // Form submit
         document.getElementById('chartForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -465,6 +543,7 @@
             const birthTime = document.getElementById('birthTime').value;
             const city = document.getElementById('city').value;
             const timezone = document.getElementById('timezone').value;
+            const isLunar = document.getElementById('isLunar').checked;
             
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
@@ -483,7 +562,8 @@
                     body: JSON.stringify({
                         birth_time: `${birthDate} ${birthTime}`,
                         city: city,
-                        timezone: timezone
+                        timezone: timezone,
+                        is_lunar: isLunar
                     })
                 });
                 
@@ -507,7 +587,6 @@
             const chart = data.chart;
             const interpretation = data.interpretation;
             
-            // Display basic info
             document.getElementById('sun').textContent = chart.sun || '-';
             document.getElementById('moon').textContent = chart.moon || '-';
             document.getElementById('ascendant').textContent = chart.ascendant || '-';
@@ -518,12 +597,6 @@
             // Display planets
             const planetsGrid = document.getElementById('planetsGrid');
             planetsGrid.innerHTML = '';
-            
-            const planetNames = {
-                'sun': '太阳', 'moon': '月亮', 'mercury': '水星',
-                'venus': '金星', 'mars': '火星', 'jupiter': '木星',
-                'saturn': '土星', 'uranus': '天王星', 'neptune': '海王星', 'pluto': '冥王星'
-            };
             
             const planets = chart.planets || {};
             for (const [key, value] of Object.entries(planets)) {
