@@ -1,11 +1,10 @@
 module.exports = async (req, res) => {
   // CORS preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    }).send('');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).send('');
   }
 
   if (req.method !== 'POST') {
@@ -51,7 +50,8 @@ module.exports = async (req, res) => {
 
 这样的配置意味着你是一个脚踏实地、注重实际的人，同时也拥有丰富的内心世界。`;
 
-    res.status(200).setHeaders({ 'Access-Control-Allow-Origin': '*' }).json({
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(200).json({
       success: true,
       chart,
       interpretation
