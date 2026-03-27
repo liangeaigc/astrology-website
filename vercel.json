@@ -1,9 +1,22 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/" },
-    { "source": "/(.*)", "destination": "/public/$1" }
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
   ],
-  "env": {
-    "MINIMAX_API_KEY": "sk-cp-FdunqMLPAhQ9ERHozFYsKWnVMVWO4aJmmUrBzMrSgUKOWh6RGSjgNgzxYdT4ttTTMBpPoT7tkDBgI-uQ7QKW1F8HwxETf_rImnkJ512uWFpNdrPb4iZD_OE"
-  }
+  "routes": [
+    {
+      "src": "/api/calculate",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ]
 }
