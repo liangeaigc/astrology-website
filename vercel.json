@@ -3,7 +3,7 @@
   "builds": [
     {
       "src": "api/calculate.py",
-      "use": "@vercel/python"
+      "use": "vercel-python"
     }
   ],
   "routes": [
@@ -11,16 +11,6 @@
       "src": "/api/calculate",
       "dest": "/api/calculate.py",
       "methods": ["POST", "OPTIONS"]
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
-      ]
     }
   ]
 }
