@@ -3,14 +3,13 @@ Vercel Serverless Function: 星盘计算
 """
 
 import json
-import os
 import datetime
 
-def handler(event, context):
-    """Vercel Serverless Handler - Vercel Python runtime"""
+def handler(request):
+    """Vercel Serverless Handler"""
     
-    # CORS preflight
-    if event.get('method') == 'OPTIONS':
+    # Handle CORS preflight
+    if request.method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
@@ -21,19 +20,14 @@ def handler(event, context):
             'body': ''
         }
     
-    method = event.get('method', 'GET')
-    
-    if method != 'POST':
+    if request.method != 'POST':
         return {
             'statusCode': 405,
             'body': json.dumps({'error': 'Method not allowed'})
         }
     
     try:
-        body = event.get('body', '{}')
-        if isinstance(body, str):
-            body = json.loads(body)
-        
+        body = request.get_json()
         birth_time = body.get('birth_time')
         city = body.get('city', '上海')
         
