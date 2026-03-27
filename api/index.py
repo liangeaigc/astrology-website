@@ -4,11 +4,13 @@ Vercel Serverless Function: 星盘计算
 
 import json
 import os
+import datetime
 
-def handler(request):
-    """Vercel Serverless Handler"""
-    # Handle CORS preflight
-    if request.method == 'OPTIONS':
+def handler(event, context):
+    """Vercel Serverless Handler - Vercel Python runtime"""
+    
+    # CORS preflight
+    if event.get('method') == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
@@ -19,14 +21,19 @@ def handler(request):
             'body': ''
         }
     
-    if request.method != 'POST':
+    method = event.get('method', 'GET')
+    
+    if method != 'POST':
         return {
             'statusCode': 405,
             'body': json.dumps({'error': 'Method not allowed'})
         }
     
     try:
-        body = json.loads(request.body or '{}')
+        body = event.get('body', '{}')
+        if isinstance(body, str):
+            body = json.loads(body)
+        
         birth_time = body.get('birth_time')
         city = body.get('city', '上海')
         
@@ -36,8 +43,7 @@ def handler(request):
                 'body': json.dumps({'error': '请提供出生时间'})
             }
         
-        # 简化测试
-        import datetime
+        # 计算星盘
         dt = datetime.datetime.strptime(birth_time, '%Y-%m-%d %H:%M')
         signs = ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', 
                  '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座']
