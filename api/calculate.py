@@ -4,10 +4,10 @@ Vercel Serverless Function: 测试
 
 import json
 
-def handler(request):
-    """Test handler"""
+def handler(request, context):
+    """Test handler for @vercel/python"""
     return {
         'statusCode': 200,
-        'headers': {'Content-Type': 'application/json'},
-        'body': json.dumps({'message': 'Hello from Python!'})
+        'headers': {'content-type': 'application/json'},
+        'body': '{"message": "Hello from Python!"}'
     }
