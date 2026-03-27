@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星盘解读 - 探索你的宇宙密码</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8B5CF6;
+            --secondary: #C084FC;
+            --accent: #F0ABFC;
+            --bg-dark: #0F0A1F;
+            --bg-card: rgba(139, 92, 246, 0.1);
+            --text-light: #E2E8F0;
+            --text-muted: #94A3B8;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        /* Stars background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: 0.1em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+
+        /* Form card */
+        .form-card {
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(192, 132, 252, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.5em;
+            color: var(--accent);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: rgba(15, 10, 31, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--text-light);
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .btn-calculate {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto 0;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-calculate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Result card */
+        .result-card {
+            display: none;
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(192, 132, 252, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .result-header h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8em;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        /* Chart display */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .chart-item {
+            background: rgba(15, 10, 31, 0.6);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .chart-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .chart-item .label {
+            color: var(--text-muted);
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+
+        .chart-item .value {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.2em;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Interpretation */
+        .interpretation {
+            background: rgba(15, 10, 31, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .interpretation h3 {
+            font-family: 'Noto Serif SC', serif;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .interpretation p {
+            line-height: 2;
+            color: var(--text-light);
+            font-size: 1.05em;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .loading-ring {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(139, 92, 246, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            margin-top: 15px;
+            color: var(--text-muted);
+        }
+
+        /* Planets section */
+        .planets-section {
+            margin-top: 30px;
+        }
+
+        .planets-section h3 {
+            font-family: 'Noto Serif SC', serif;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .planet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .planet-item {
+            background: rgba(15, 10, 31, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .planet-item .planet {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .planet-item .position {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.85em;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            .form-card, .result-card {
+                padding: 25px 20px;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars background -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>✨ 星盘解读</h1>
+            <p>探索你的宇宙密码，发现独特的生命旅程</p>
+        </div>
+
+        <!-- Form -->
+        <div class="form-card">
+            <h2 class="form-title">🌙 告诉我关于你</h2>
+            <form id="chartForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>出生日期</label>
+                        <input type="date" id="birthDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>出生时间（精确到分钟）</label>
+                        <input type="time" id="birthTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>出生城市</label>
+                        <input type="text" id="city" placeholder="例如：上海" value="上海" required>
+                    </div>
+                    <div class="form-group">
+                        <label>时区</label>
+                        <select id="timezone">
+                            <option value="Asia/Shanghai" selected>中国（北京时间）</option>
+                            <option value="Asia/Hong_Kong">香港</option>
+                            <option value="Asia/Taipei">台北</option>
+                            <option value="Asia/Singapore">新加坡</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-calculate" id="submitBtn">🔮 开始解读</button>
+            </form>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="loading-ring"></div>
+            <p>星星正在解读你的星盘...</p>
+        </div>
+
+        <!-- Result -->
+        <div class="result-card" id="result">
+            <div class="result-header">
+                <h2>🌟 你的星盘</h2>
+                <p id="resultInfo"></p>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-item">
+                    <div class="label">☀️ 太阳</div>
+                    <div class="value" id="sun">-</div>
+                </div>
+                <div class="chart-item">
+                    <div class="label">🌙 月亮</div>
+                    <div class="value" id="moon">-</div>
+                </div>
+                <div class="chart-item">
+                    <div class="label">⬆️ 上升</div>
+                    <div class="value" id="ascendant">-</div>
+                </div>
+                <div class="chart-item">
+                    <div class="label">⬆️ 天顶</div>
+                    <div class="value" id="midheaven">-</div>
+                </div>
+            </div>
+
+            <div class="interpretation">
+                <h3>📜 星盘解读</h3>
+                <p id="interpretationText">解读生成中...</p>
+            </div>
+
+            <div class="planets-section">
+                <h3>🪐 行星分布</h3>
+                <div class="planet-grid" id="planetsGrid"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Made with 🌌 · 仅供娱乐参考 · 星盘不是宿命论</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = Math.random() * 3 + 1 + 'px';
+            star.style.height = star.style.width;
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Form submit
+        document.getElementById('chartForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const birthDate = document.getElementById('birthDate').value;
+            const birthTime = document.getElementById('birthTime').value;
+            const city = document.getElementById('city').value;
+            const timezone = document.getElementById('timezone').value;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = '解读中...';
+            loading.classList.add('show');
+            result.classList.remove('show');
+            
+            try {
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        birth_time: `${birthDate} ${birthTime}`,
+                        city: city,
+                        timezone: timezone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult(data);
+                } else {
+                    alert('计算出错：' + data.error);
+                }
+            } catch (err) {
+                alert('网络错误，请重试');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🔮 开始解读';
+                loading.classList.remove('show');
+            }
+        });
+
+        function displayResult(data) {
+            const chart = data.chart;
+            const interpretation = data.interpretation;
+            
+            // Display basic info
+            document.getElementById('sun').textContent = chart.sun || '-';
+            document.getElementById('moon').textContent = chart.moon || '-';
+            document.getElementById('ascendant').textContent = chart.ascendant || '-';
+            document.getElementById('midheaven').textContent = chart.midheaven || '-';
+            document.getElementById('interpretationText').textContent = interpretation;
+            document.getElementById('resultInfo').textContent = `${chart.birth_time} · ${chart.city}`;
+            
+            // Display planets
+            const planetsGrid = document.getElementById('planetsGrid');
+            planetsGrid.innerHTML = '';
+            
+            const planetNames = {
+                'sun': '太阳', 'moon': '月亮', 'mercury': '水星',
+                'venus': '金星', 'mars': '火星', 'jupiter': '木星',
+                'saturn': '土星', 'uranus': '天王星', 'neptune': '海王星', 'pluto': '冥王星'
+            };
+            
+            const planets = chart.planets || {};
+            for (const [key, value] of Object.entries(planets)) {
+                const name = planetNames[key] || key;
+                const item = document.createElement('div');
+                item.className = 'planet-item';
+                item.innerHTML = `<div class="planet">${name}</div><div class="position">${value}</div>`;
+                planetsGrid.appendChild(item);
+            }
+            
+            document.getElementById('result').classList.add('show');
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
