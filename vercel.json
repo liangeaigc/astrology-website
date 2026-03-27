@@ -1,28 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/calculate.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "public/**",
-      "use": "static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/calculate",
-      "dest": "api/calculate.py"
-    },
-    {
-      "src": "/",
-      "dest": "public/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "public/$1"
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/" },
+    { "source": "/(.*)", "destination": "/public/$1" }
   ],
   "env": {
     "MINIMAX_API_KEY": "sk-cp-FdunqMLPAhQ9ERHozFYsKWnVMVWO4aJmmUrBzMrSgUKOWh6RGSjgNgzxYdT4ttTTMBpPoT7tkDBgI-uQ7QKW1F8HwxETf_rImnkJ512uWFpNdrPb4iZD_OE"
